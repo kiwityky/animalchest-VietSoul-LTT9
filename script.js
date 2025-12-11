@@ -100,6 +100,7 @@ const currentPlayerEl = document.getElementById('current-player');
 const logEl = document.getElementById('log-list');
 const messageEl = document.getElementById('message');
 const pieceInfoEl = document.getElementById('piece-info');
+const notificationEl = document.getElementById('notification');
 
 // Initialize board data with pieces and cell types
 function initBoard() {
@@ -141,6 +142,7 @@ function initBoard() {
   renderBoard();
   updateStatus();
   clearLog();
+  showNotification('success', 'Bàn cờ đã được làm mới.');
   setMessage('Chọn quân và ô đích. Ô có câu hỏi cần trả lời đúng để mở vĩnh viễn.');
 }
 
@@ -256,17 +258,20 @@ function ensureCellUnlocked(orderNumber) {
 
   if (response === null) {
     setMessage('Bạn đã hủy trả lời. Nước đi không được thực hiện.');
+    showNotification('error', 'Câu trả lời bị hủy. Hãy thử lại ở lượt sau.');
     return false;
   }
 
   const normalized = normalizeAnswer(response);
   if (qa.answers.some(ans => normalizeAnswer(ans) === normalized)) {
     unlockedCells.add(orderNumber);
-    setMessage(`Trả lời đúng! Ô ${orderNumber} đã được mở vĩnh viễn. Hoàn tất nước đi.`);
+    showNotification('success', `Trả lời đúng! Ô ${orderNumber} đã được mở vĩnh viễn.`);
+    setMessage('Hoàn tất nước đi của bạn.');
     return true;
   }
 
-  setMessage('Câu trả lời chưa đúng, bạn mất lượt.');
+  showNotification('error', 'Câu trả lời chưa đúng, bạn mất lượt.');
+  setMessage('Câu trả lời chưa đúng, chuyển lượt cho đối thủ.');
   selected = null;
   legalMoves = [];
   renderBoard();
@@ -629,22 +634,16 @@ function setMessage(msg) {
   messageEl.textContent = msg;
 }
 
+function showNotification(type, text) {
+  notificationEl.textContent = text || '';
+  notificationEl.classList.remove('error');
+  if (type === 'error') {
+    notificationEl.classList.add('error');
+  }
+}
+
 // Button handlers
 function setupControls() {
-  document.getElementById('answer-correct').addEventListener('click', () => {
-    if (gameOver) return;
-    setMessage('Chọn ô đích, nếu ô có câu hỏi hãy trả lời để mở ô.');
-  });
-
-  document.getElementById('answer-wrong').addEventListener('click', () => {
-    if (gameOver) return;
-    selected = null;
-    legalMoves = [];
-    renderBoard();
-    setMessage('Bạn đã bỏ lượt. Chuyển sang đối phương.');
-    switchPlayer();
-  });
-
   document.getElementById('reset').addEventListener('click', () => initBoard());
 }
 
