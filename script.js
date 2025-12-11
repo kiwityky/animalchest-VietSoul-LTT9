@@ -146,6 +146,14 @@ function renderBoard() {
       label.textContent = `${String.fromCharCode(65 + c)}${r + 1}`;
       cell.appendChild(label);
 
+      const orderNumber = getCellOrderNumber(r, c);
+      if (orderNumber !== null) {
+        const order = document.createElement('span');
+        order.className = 'order';
+        order.textContent = orderNumber;
+        cell.appendChild(order);
+      }
+
       if (selected && selected.row === r && selected.col === c) {
         cell.classList.add('selected');
       }
@@ -166,6 +174,19 @@ function renderBoard() {
       boardEl.appendChild(cell);
     }
   }
+}
+
+function getCellOrderNumber(row, col) {
+  if (col === 4) return null; // River column is unnumbered
+
+  const effectiveColumn = col > 4 ? col - 1 : col; // Skip river column in ordering
+  const startNumber = effectiveColumn * ROWS + 1;
+
+  if (effectiveColumn % 2 === 0) {
+    return startNumber + row; // top-to-bottom
+  }
+
+  return startNumber + (ROWS - 1 - row); // bottom-to-top
 }
 
 function pieceName(piece) {

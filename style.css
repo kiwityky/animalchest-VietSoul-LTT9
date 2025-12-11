@@ -94,6 +94,15 @@ body {
   color: #888;
 }
 
+.cell .order {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  color: #7f8c8d;
+  font-weight: 700;
+}
+
 .cell.river {
   background: var(--river);
 }
