@@ -76,14 +76,16 @@ function initBoard() {
           board[r][c].cellType = CELL_TYPES.bridge;
         }
       }
-      // Fortresses
-      if (r >= 1 && r <= 5 && c >= 0 && c <= 2) {
+      const isRedFortress = r >= 1 && r <= 5 && c >= 0 && c <= 2 && !([1, 5].includes(r) && c <= 2);
+      const isGreenFortress = r >= 1 && r <= 5 && c >= 6 && c <= 8 && !([1, 5].includes(r) && c >= 6);
+
+      if (isRedFortress) {
         board[r][c].cellType = CELL_TYPES.fortressRed;
       }
-      if (r >= 1 && r <= 5 && c >= 6 && c <= 8) {
+      if (isGreenFortress) {
         board[r][c].cellType = CELL_TYPES.fortressGreen;
       }
-      if ((r === 3 && c === 1) || (r === 3 && c === 7)) {
+      if ((r === 3 && c === 0) || (r === 3 && c === 8)) {
         board[r][c].cellType = CELL_TYPES.fortressCenter;
       }
     }
