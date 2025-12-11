@@ -1,5 +1,6 @@
 // Data structures and constants
-const SIZE = 8;
+const ROWS = 7;
+const COLS = 9;
 const PLAYER_RED = 'red';
 const PLAYER_GREEN = 'green';
 
@@ -62,27 +63,27 @@ const pieceInfoEl = document.getElementById('piece-info');
 
 // Initialize board data with pieces and cell types
 function initBoard() {
-  board = Array.from({ length: SIZE }, () =>
-    Array.from({ length: SIZE }, () => ({ piece: null, cellType: CELL_TYPES.normal }))
+  board = Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => ({ piece: null, cellType: CELL_TYPES.normal }))
   );
 
-  // Assign rivers and bridges (column 3 as river, rows 2,4,6 as bridge)
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
-      if (c === 3) {
+  // River along column E (index 4) with bridges on rows 0, 3, 6
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (c === 4) {
         board[r][c].cellType = CELL_TYPES.river;
-      }
-      if (c === 3 && [2, 4, 6].includes(r)) {
-        board[r][c].cellType = CELL_TYPES.bridge;
+        if ([0, 3, 6].includes(r)) {
+          board[r][c].cellType = CELL_TYPES.bridge;
+        }
       }
       // Fortresses
-      if (r >= 2 && r <= 4 && c >= 0 && c <= 2) {
+      if (r >= 1 && r <= 5 && c >= 0 && c <= 2) {
         board[r][c].cellType = CELL_TYPES.fortressRed;
       }
-      if (r >= 2 && r <= 4 && c >= 5 && c <= 7) {
+      if (r >= 1 && r <= 5 && c >= 6 && c <= 8) {
         board[r][c].cellType = CELL_TYPES.fortressGreen;
       }
-      if ((r === 3 && c === 1) || (r === 3 && c === 6)) {
+      if ((r === 3 && c === 1) || (r === 3 && c === 7)) {
         board[r][c].cellType = CELL_TYPES.fortressCenter;
       }
     }
@@ -104,20 +105,20 @@ function initBoard() {
 // Place symmetric starting pieces
 function placeInitialPieces() {
   const layout = [
-    { type: 'elephant', positions: [ [0,0], [0,2] ] },
-    { type: 'tiger', positions: [ [0,1], [0,3] ] },
-    { type: 'cat', positions: [ [1,0], [1,2] ] },
-    { type: 'snake', positions: [ [1,1], [1,3] ] },
-    { type: 'dog', positions: [ [2,0], [2,2] ] },
-    { type: 'rat', positions: [ [2,1], [1,4], [0,5] ] },
-    { type: 'tree', positions: [ [3,1] ] }
+    { type: 'elephant', positions: [ [0,0], [6,0] ] },
+    { type: 'tiger', positions: [ [2,0], [5,0] ] },
+    { type: 'cat', positions: [ [1,0], [4,0] ] },
+    { type: 'snake', positions: [ [1,1], [5,1] ] },
+    { type: 'dog', positions: [ [4,1] ] },
+    { type: 'rat', positions: [ [0,1], [2,1], [3,1], [6,1] ] },
+    { type: 'tree', positions: [ [3,0] ] }
   ];
 
   layout.forEach(({ type, positions }) => {
     positions.forEach(([r, c]) => {
       board[r][c].piece = { type, color: PLAYER_RED };
-      const mirrorRow = SIZE - 1 - r;
-      const mirrorCol = SIZE - 1 - c;
+      const mirrorRow = r;
+      const mirrorCol = COLS - 1 - c;
       board[mirrorRow][mirrorCol].piece = { type, color: PLAYER_GREEN };
     });
   });
@@ -126,8 +127,8 @@ function placeInitialPieces() {
 // Render board grid and pieces
 function renderBoard() {
   boardEl.innerHTML = '';
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
       const cell = document.createElement('div');
       const cellData = board[r][c];
       cell.classList.add('cell');
@@ -209,12 +210,12 @@ function selectPiece(row, col) {
 }
 
 // Check cell helpers
-const inBounds = (r, c) => r >= 0 && r < SIZE && c >= 0 && c < SIZE;
+const inBounds = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS;
 const isRiver = (r, c) => board[r][c].cellType === CELL_TYPES.river;
 const isBridge = (r, c) => board[r][c].cellType === CELL_TYPES.bridge;
 const isFortress = (color, r, c) => {
-  if (color === PLAYER_RED) return r >= 2 && r <= 4 && c >= 0 && c <= 2;
-  return r >= 2 && r <= 4 && c >= 5 && c <= 7;
+  if (color === PLAYER_RED) return r >= 1 && r <= 5 && c >= 0 && c <= 2;
+  return r >= 1 && r <= 5 && c >= 6 && c <= 8;
 };
 
 // Generate legal moves respecting each piece rule
@@ -315,12 +316,12 @@ function getLegalMoves(piece, position) {
     }
     case 'rat': {
       const forward = piece.color === PLAYER_RED ? 1 : -1;
-      const candidates = [ [forward,0], [0,1], [0,-1] ];
+      const candidates = [ [0, forward], [1,0], [-1,0] ];
       candidates.forEach(([dr, dc]) => {
         const nr = row + dr;
         const nc = col + dc;
         if (!inBounds(nr, nc)) return;
-        if (dr === -forward) return; // lùi
+        if (dc === -forward) return; // lùi
         if (isRiver(nr, nc) && !isBridge(nr, nc)) return;
         addMoveIfValid(nr, nc);
       });
@@ -386,8 +387,8 @@ function wouldFaceTrees(from, to) {
 
 // Find tree position for given color
 function findTree(color) {
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
       const piece = board[r][c].piece;
       if (piece && piece.type === 'tree' && piece.color === color) return { row: r, col: c };
     }
@@ -399,13 +400,13 @@ function findTree(color) {
 function treesFacing() {
   const redTree = findTree(PLAYER_RED);
   const greenTree = findTree(PLAYER_GREEN);
-  if (!redTree || !greenTree || redTree.col !== greenTree.col) return false;
+  if (!redTree || !greenTree || redTree.row !== greenTree.row) return false;
 
-  const col = redTree.col;
-  const start = Math.min(redTree.row, greenTree.row) + 1;
-  const end = Math.max(redTree.row, greenTree.row);
-  for (let r = start; r < end; r++) {
-    if (board[r][col].piece) return false;
+  const row = redTree.row;
+  const start = Math.min(redTree.col, greenTree.col) + 1;
+  const end = Math.max(redTree.col, greenTree.col);
+  for (let c = start; c < end; c++) {
+    if (board[row][c].piece) return false;
   }
   return true;
 }
@@ -444,8 +445,8 @@ function movePiece(from, to) {
 
   // Promotion for rat
   if (piece.type === 'rat') {
-    const lastRow = piece.color === PLAYER_RED ? SIZE - 1 : 0;
-    if (to.row === lastRow) {
+    const lastCol = piece.color === PLAYER_RED ? COLS - 1 : 0;
+    if (to.col === lastCol) {
       const choice = prompt('Phong cấp Chuột thành: voi, hổ, mèo, rắn, chó, chuột (nhập chữ)');
       const map = {
         voi: 'elephant',
@@ -566,8 +567,8 @@ function checkWinCondition() {
 
 function countPieces(color) {
   let total = 0;
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
       const piece = board[r][c].piece;
       if (piece && piece.color === color) total++;
     }
