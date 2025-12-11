@@ -180,6 +180,9 @@ function renderBoard() {
       cell.classList.add(cellData.cellType.replace('fortress', 'fortress'));
       if (cellData.cellType === CELL_TYPES.bridge) cell.textContent = 'Cầu';
       if (cellData.cellType === CELL_TYPES.fortressCenter) cell.classList.add('fortress-center');
+      if ((r === 1 && c === 4) || (r === 4 && c === 4)) {
+        cell.classList.add('river-label');
+      }
 
       const label = document.createElement('span');
       label.className = 'label';
