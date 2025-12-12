@@ -332,6 +332,7 @@ body {
   }
   #board {
     width: min(96vw, 720px);
+    max-height: 82vh;
   }
   #sidebar {
     order: 2;
@@ -358,6 +359,7 @@ body {
   }
   #board {
     width: 100%;
+    max-height: 78vh;
     gap: 3px;
   }
   .cell {
