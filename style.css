@@ -328,10 +328,10 @@ body {
   }
   #board-container {
     order: 1;
+    padding: 10px;
   }
   #board {
-    width: min(96vw, 720px, calc((100vh - 160px) * 9 / 7));
-    max-height: calc(100vh - 160px);
+    width: min(96vw, 720px);
   }
   #sidebar {
     order: 2;
@@ -357,8 +357,7 @@ body {
     padding: 8px;
   }
   #board {
-    width: min(100%, calc((100vh - 140px) * 9 / 7));
-    max-height: calc(100vh - 140px);
+    width: 100%;
     gap: 3px;
   }
   .cell {
@@ -414,6 +413,10 @@ body {
   .brand__text {
     font-size: 17px;
   }
+  .cell .label,
+  .cell .order {
+    display: none;
+  }
   .status,
   .controls button,
   #notification,
@@ -422,6 +425,20 @@ body {
   }
   #log-list {
     max-height: 160px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .app {
+    grid-template-columns: 1fr;
+    padding: 8px;
+  }
+  #board-container {
+    padding: 8px;
+  }
+  #board {
+    width: min(98vw, 120vh);
+    max-height: 90vh;
   }
 }
 
