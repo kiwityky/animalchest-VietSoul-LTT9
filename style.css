@@ -28,7 +28,7 @@ body {
 
 .app {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
   min-height: 100vh;
   gap: 16px;
   padding: 16px;
@@ -57,7 +57,7 @@ body {
 }
 
 #board {
-  width: min(90vw, 810px);
+  width: min(92vw, 810px);
   aspect-ratio: 9 / 7;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
@@ -322,15 +322,103 @@ body {
 @media (max-width: 900px) {
   .app {
     grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+  #board-container {
+    order: 1;
   }
   #board {
-    width: 100%;
+    width: min(96vw, 720px);
+  }
+  #sidebar {
+    order: 2;
+    grid-template-rows: auto auto auto auto auto auto;
   }
   .controls {
     grid-template-columns: 1fr;
   }
   #reset {
     grid-column: span 1;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    background: radial-gradient(circle at 20% 20%, #f8fbff, #fff7fb 60%, #f0f7ff 90%);
+  }
+  .app {
+    padding: 10px;
+    gap: 10px;
+  }
+  #board-container {
+    padding: 8px;
+  }
+  #board {
+    width: 100%;
+    gap: 3px;
+  }
+  .cell {
+    border-radius: 4px;
+  }
+  .cell .label,
+  .cell .order {
+    font-size: 9px;
+  }
+  .piece {
+    width: 68%;
+    border-width: 2px;
+  }
+  #sidebar {
+    padding: 12px;
+    gap: 10px;
+  }
+  .brand {
+    justify-content: flex-start;
+  }
+  .brand__logo {
+    width: 56px;
+    height: 56px;
+  }
+  .brand__text {
+    font-size: 18px;
+  }
+  .status {
+    font-size: 14px;
+  }
+  .controls button {
+    padding: 10px;
+    font-size: 15px;
+  }
+  #log-list li {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 8px;
+  }
+  #board-container {
+    border-radius: 10px;
+  }
+  #sidebar {
+    border-radius: 10px;
+  }
+  .brand {
+    gap: 8px;
+  }
+  .brand__text {
+    font-size: 17px;
+  }
+  .status,
+  .controls button,
+  #notification,
+  #message {
+    text-align: center;
+  }
+  #log-list {
+    max-height: 160px;
   }
 }
 
