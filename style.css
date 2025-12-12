@@ -50,14 +50,15 @@ body {
 
 #board-container::before {
   content: "";
-  position: absolute;
+  position: absolute;  
   inset: 6% 4%;
-  background: url("img/Logo.jpg") center/contain no-repeat;
+  background: url("img/Logo_LTT.png") center/contain no-repeat;
   opacity: 0.08;
-  transform: rotate(-5deg);
+  transform: rotate(0deg);
   filter: saturate(0.7);
   pointer-events: none;
-  z-index: 0;
+  z-index: 10;
+  background-size: 40%;
 }
 
 #board-container::after {
