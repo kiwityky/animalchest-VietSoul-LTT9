@@ -413,10 +413,17 @@ function getLegalMoves(piece, position) {
     }
     case 'cat': {
       directions.orthogonal.forEach(([dr, dc]) => {
-        const nr = row + dr;
-        const nc = col + dc;
+        let nr = row + dr;
+        let nc = col + dc;
         if (!inBounds(nr, nc)) return;
-        if (isRiver(nr, nc) && !isBridge(nr, nc)) return; // chỉ qua cầu
+
+        if (isBridge(nr, nc)) {
+          nr += dr;
+          nc += dc;
+          if (!inBounds(nr, nc)) return;
+        } else if (isRiver(nr, nc)) {
+          return;
+        }
         addMoveIfValid(nr, nc);
       });
       break;
@@ -451,11 +458,18 @@ function getLegalMoves(piece, position) {
       const forward = piece.color === PLAYER_RED ? 1 : -1;
       const candidates = [ [0, forward], [1,0], [-1,0] ];
       candidates.forEach(([dr, dc]) => {
-        const nr = row + dr;
-        const nc = col + dc;
+        let nr = row + dr;
+        let nc = col + dc;
         if (!inBounds(nr, nc)) return;
         if (dc === -forward) return; // lùi
-        if (isRiver(nr, nc) && !isBridge(nr, nc)) return;
+        
+        if (isBridge(nr, nc)) {
+          nr += dr;
+          nc += dc;
+          if (!inBounds(nr, nc)) return;
+        } else if (isRiver(nr, nc)) {
+          return;
+        }
         addMoveIfValid(nr, nc);
       });
       break;
